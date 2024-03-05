@@ -1,0 +1,47 @@
+﻿@page
+@model UserModel
+@using Repository.Entities
+@using DeploymentManualRazor.Models
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h1>Lista de usuarios</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID Usuario</th>
+            <th>Usuario de Red</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Area</th>
+            <th>Puesto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model.Users)
+        {
+            <tr>
+                <td>@usuario.UserID</td>
+                <th>@usuario.NetworkUser</th>
+                <td>@usuario.Name</td>
+                <td>@usuario.Email</td>
+                <td>@usuario.Phone</td>
+                <td>@usuario.Area</td>
+                <td>@usuario.Position</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h2>Generar</h2>
+<a href="/Excel">Descargar Plantilla de Excel</a>
+<a asp-page="/ExcelProduc" asp-page-handler="DownloadTemplate">Descargar Plantilla Paso a Produccion</a>
+
+
+<p>
+    <a asp-page="/Excel" asp-route-action="DownloadTemplate" class="btn btn-primary">Descargar Plantilla</a>
+</p>
+

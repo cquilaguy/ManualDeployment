@@ -1,0 +1,124 @@
+﻿@page
+@model DeploymentManualRazor.Pages.Ambiente.IndexModel
+@{ ViewData["Title"] = "Ambiente"; }
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+
+
+
+    </title>
+</head>
+<body>
+    <!-- Boton modal nuevo -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalNew">
+        Nuevo
+    </button>
+    <hr />
+    <!-- Modal -->
+    <div class="modal fade" id="modalNew" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Seleccione el ambiente y el aplicativo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (Model.Environments.Any() && Model.Applicatives.Any())
+                    {
+                        <form>
+                            <div class="row">
+                                <div class="col">
+                                    <select class="form-select" id="ambientesDropdown">
+                                        <option value="">Seleccione un ambiente</option>
+                                        @foreach (var environment in Model.Environments)
+                                        {
+                                            <option value="@environment.EnvironmentID">@environment.NameEnvironment</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" id="aplicativosDropdown">
+                                        <option value="">Seleccione un aplicativo</option>
+                                        @foreach (var applicative in Model.Applicatives)
+                                        {
+                                            <option value="@applicative.ApplicativeID">@applicative.NameApplicative</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </form> 
+                     }
+                     else
+                     {
+                        <p>No hay ambientes</p>
+                     }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
+                    <button id="searchModalBtn" type="button" class="btn btn-primary">Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="changesTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Numero de Cambio</th>
+                <th>Ambiente</th>
+                <th>Aplicativo</th>
+                <th>Fecha Postulacion</th>
+                <th>Fecha Despliegue</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        
+    </table>
+    <select id="ChangeId" name="ChangeId">
+        <option value="">Todos los ChangeID</option>
+        @foreach (var change in Model.Changes)
+        {
+            <option value="@change.ChangeID">@change.ChangeID</option>
+        } 
+    </select>
+    <button type="submit">Filtrar</button>
+
+    <a type="submit" onclick="filterAndDownload()" asp-page-handler="DownloadTemplate" asp-route-changeId="@Model.ChangeId">Filtrar y Descargar</a>
+
+    <p>
+        <a asp-page-handler="DownloadTemplate" asp-route-changeId="@Model.ChangeId">Descargar Plantilla</a>
+    </p>
+
+    @section Scripts {
+        <script>
+            $(function () {
+                $('#changesTable').DataTable();
+ 
+                $('#searchModalBtn').click(function () {
+                    console.log("hola mundo")
+                    var ambienteId = $('#ambientesDropdown').val();
+                    var aplicativoId = $('#aplicativosDropdown').val();
+                    var url = '';
+
+                    if (ambienteId === '1') {
+                        url = '../TemplatePDC/Pdc';
+                    } else if (ambienteId === '3') {
+                        url = '../TemplateUAT/Uat';
+                    } else if (ambienteId === '2') {
+                        url = '../TemplateUAT/Pdc';
+                    }
+
+                    if (url) {
+                        console.log('Redireccionando a:', url);
+                        window.location.href = url + '?ambienteId=' + ambienteId + '&aplicativoId=' + aplicativoId;
+                    }
+                });
+            });
+        </script>
+    }
+</body>
+</html>

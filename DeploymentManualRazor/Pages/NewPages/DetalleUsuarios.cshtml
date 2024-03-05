@@ -1,0 +1,69 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.DetalleUsuariosModel
+@{
+}
+<!--Detalles usuarios funcionales-->
+<div class="form-step" id="step8">
+
+    <h2 id="prerePost">Detalle usuarios funcionales</h2><br />
+    <button class="btn btn-primary rounded-pill" type="button" onclick="addRowUsu()">Agregar fila</button>
+    <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowUsu()">Eliminar fila</button>
+    <table class="table table-striped" id="functionalUsers">
+        <tr>
+            <th>Secuencia</th>
+            <th>Funcionario (Nombre y Apellido)</th>
+            <th>Área</th>
+            <th>Usuario de ingreso</th>
+            <th>Teléfono Contacto (Ext.)</th>
+            <th>Fecha y hora inicio</th>
+            <th>Fecha y hora final</th>
+        </tr>
+        <tr>
+            <td>
+                <input class="usuSecuMain form-control" name="usuSecuMain" value="1">
+            </td>
+            <td>
+                <input class="form-control" type="text" name="usuFuncionarioMain" />
+            </td>
+            <td>
+                <input class="form-control" type="text" name="usuAreaMain" />
+            </td>
+            <td>
+                <input class="user form-control" type="text" name="usuIngresoMain" />
+            </td>
+            <td>
+                <input class="form-control" type="text" value="N/A" name="usuPhoneMain" />
+            </td>
+            <td>
+                <input class="form-control" type="datetime-local" id="startDateUsu" max="2050-12-31T23:59" name="startDateUsu">
+            </td>
+            <td>
+                <input class="form-control" type="datetime-local" id="endDateUsu" max="2050-12-31T23:59" name="endDateUsu">
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="col-md-4">
+        <p class="fw-bold">Roll Back</p>
+        <input class="form-control" type="text" name="rollBack">
+    </div>
+    <div class="col-md-4">
+        <p class="fw-bold">Blue print</p>
+        <p class="fw-bold">Versión</p>
+        <input clPss="form-control" type="text" id="versionBlue" name="versionBlue">
+
+        <p class="fw-bold">Fecha</p>
+        <input class="form-control" type="text" id="dateBlue" name="dateBlue">
+
+        <p class="fw-bold">Observaciones generales y anexos</p>
+        <input class="form-control" type="text" id="observaciones" name="observaciones" value="https://asesorescolpatria.sharepoint.com/:u:/s/Tecnologia/EVvFp-tVp5FJngwpkH1Ah04BK9rxR-mhQ-EuGheRM9j6rg?e=YeOAzn">
+
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-primary me-2" onclick="previousStep('step8', 'step7')">Anterior</button>
+        <a type="button" class="btn btn-success" asp-page="../Excel" asp-page-handler="DownloadTemplate">Descargar Plantilla </a>
+        <button class="btn btn-success" type="submit">Descargar Excel</button>
+    </div>
+</div>

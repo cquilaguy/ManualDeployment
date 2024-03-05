@@ -1,0 +1,74 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.InformacionContactosModel
+@{
+}
+<!-- INFORMACION GENERAL DE CONTACTOS -->
+<div class="form-step" id="step4">
+    <h2>Información general de contactos</h2><br />
+    <!--Botones para agregar y eliminar filas  -->
+    <button class="btn btn-primary rounded-pill" type="button" onclick="addRowContact()">Agregar fila</button>
+    <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowContact()">Eliminar fila</button>
+    <!--Tabla informacion general de contactos-->
+    <table class="table table-striped" id="informationContact">
+        <thead>
+            <tr>
+                <th>Rol</th>
+                <th>Nombre y Apellido</th>
+                <th>Telefono</th>
+                <th>Email</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="contactRow mainRow">
+                <td>
+                    <select class="form-select contactRolMain" name="contactRolMain">
+                        <option value="">Seleccione un Rol</option>
+                        <option value="Lider Digital">Lider Digital</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select contactNameMain" name="contactNameMain">
+                        <option value="">Seleccione un Usuario</option>
+                    </select>
+                </td>
+                <td>
+                    <input class="contactPhoneMain form-control" type="number" name="contactPhoneMain">
+                </td>
+                <td>
+                    <input class="contactEmailMain form-control" type="text" name="contactEmailMain" />
+                </td>
+                <td>
+                    <textarea class="contactObserMain form-control" type="text" title="Observaciones" name="contactObserMain"> </textarea>
+                </td>
+            </tr>
+            <tr class="contactRow mainRow">
+                <td>
+                    <select class="form-select contactRolDev" name="contactRolDev">
+                        <option value="">Seleccione un Rol</option>
+                        <option value="Desarrollador">Desarrollador</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select contactNameDev" name="contactNameDev">
+                        <option value="">Seleccione un Usuario</option>
+                    </select>
+                </td>
+                <td>
+                    <input class="contactPhoneDev form-control" type="number" name="contactPhoneDev">
+                </td>
+                <td>
+                    <input class="contactEmailDev form-control" type="text" name="contactEmailDev">
+                </td>
+                <td>
+                    <textarea class="contactObserDev form-control" type="text" title="Observaciones" name="contactObserDev"> </textarea>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Botones para avanzar al siguiente paso o retroceder -->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-primary me-2" type="button" onclick="previousStep('step4', 'step3')">Anterior</button>
+        <button class="btn btn-primary" type="button" onclick="nextStep('step4', 'step5')">Siguiente</button>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.FormatoCapacitacionModel
+@{
+}
+
+<!-- FORMATO DE CAPACITACION -->
+<div class="form-step" id="step3">
+    <h2>Formato de capacitación</h2><br />
+    <!--Botones para agregar y eliminar filas  -->
+    <button class="btn btn-primary rounded-pill" type="button" onclick="addRowTraining()">Agregar fila</button>
+    <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowTraining()">Eliminar fila</button>
+    <!--Tabla formato de capacitacion  -->
+    <table class="table table-striped" id="trainigFormat">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Instructor</th>
+                <th>Recurso capacitado</th>
+                <th>Comentarios</th>
+                <th>Tipo</th>
+                <th>Objetivo capacitación</th>
+                <th>Temas tratados</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="trainingRow">
+                <td>
+                    <input class="form-control" type="date" id="startDateTraining" max="2023/12/31" name="startDateTraining" />
+                </td>
+                <td>
+                    <input class="developerNameMain form-control" type="text" name="developerNameMain" />
+                </td>
+                @*<td><label class="developerNameMain"></label></td>*@
+                <td>
+                    <input class="form-control" id="dataTrainingMain" type="text" name="dataTrainingMain" />
+                </td>
+                @*<td><label type="text" id="dataTrainingMain"></label></td>*@
+                <td><textarea class="form-control" type="text" id="comments" title="Comentarios" name="comments"> </textarea></td>
+                <td><input class="form-control" type="text" id="type" name="type"></td>
+                <td><input class="form-control" type="text" id="objetive" name="objetive"></td>
+                <td><input class="form-control" type="text" id="issues" name="issues"></td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Botones para avanzar al siguiente paso o retroceder -->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-primary me-2" type="button" onclick="previousStep('step3', 'step2')">Anterior</button>
+        <button class="btn btn-primary" type="button" onclick="nextStep('step3', 'step4')">Siguiente</button>
+    </div>
+</div>

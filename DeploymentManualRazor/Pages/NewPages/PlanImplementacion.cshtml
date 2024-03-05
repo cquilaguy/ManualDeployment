@@ -1,0 +1,67 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.PlanImplementacionModel
+@{
+}
+
+<!--PLAN DE IMPLEMENTACION-->
+<div class="form-step" id="step6">
+    <h2>Plan de implementación</h2><br />
+    <!--Botones para agregar y eliminar filas  -->
+    <button class="btn btn-primary rounded-pill" type="button" onclick="addRowPlan()">Agregar fila</button>
+    <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowPlan()">Eliminar fila</button>
+    <table class="table table-striped" id="plan">
+        <thead>
+            <tr>
+                <th>Secuencia</th>
+                <th>Descripción</th>
+                <th>Fecha y hora inicio</th>
+                <th>Fecha y hora final</th>
+                <th>Tiempo de ejecución</th>
+                <th>Responsable (Nombre y Apellido)</th>
+                <th>Área o proveedor</th>
+                <th>SI</th>
+                <th>NO</th>
+                <th>ERROR</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="planRow">
+                <td>
+                    <input class="planSecuMain form-control" name="planSecuMain" value="1">
+                </td>
+                <td>
+                    <textarea class="planDescripMain form-control" name="planDescripMain" id="serverPlan" title="Descripción"> </textarea>
+                </td>
+                <td>
+                    <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="startDatePlan" name="startDatePlan">
+                </td>
+                <td>
+                    <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="endDatePlan" name="endDatePlan">
+                </td>
+                <td>
+                    <input class="form-control" type="number" value="" id="timeEx" name="timeEx" />
+                </td>
+                <td>
+                    <input class="form-control" type="text" value="Admnin. Servidores" name="responsiblePlan">
+                </td>
+                <td>
+                    <input class="form-control" type="text" value="Infraestructura" name="areaPlan">
+                </td>
+                <td>
+                    <input class="form-check-input" type="radio" name="radioPlan" id="radios1" value="option1">
+                </td>
+                <td>
+                    <input class="form-check-input" type="radio" name="radioPlan" id="radios2" value="option2">
+                </td>
+                <td>
+                    <textarea class="form-control" title="Error">N/A</textarea>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-primary me-2" onclick="previousStep('step6', 'step5')">Anterior</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep('step6', 'step7')">Siguiente</button>
+    </div>
+
+</div>

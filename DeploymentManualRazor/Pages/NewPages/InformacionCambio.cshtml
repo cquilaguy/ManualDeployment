@@ -1,0 +1,103 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.InformacionCambioModel
+@{ ViewData["Title"] = "Plantilla Produccion";}
+
+<!DOCTYPE html>
+
+<!-- INFORMACION CAMBIO -->
+<div class="form-step active" id="step1">
+    <h2>Información de cambio</h2>
+    <!-- Desplegable tipo de solicitud -->
+    <div class="row">
+        <div class="col-md-4">
+            <label class="form-label" for="requesType">Tipo de solicitud</label>
+            <select class="form-select" id="requesType" name="requesType">
+                <option>Requerimiento </option>
+                <option>Mantenimiento</option>
+                <option>Proyecto</option>
+            </select>
+        </div>
+        <!--  Numero de cambio-->
+        <div class="col-md-4">
+            <label class="form-label" for="changeNumber">Numero de cambio</label>
+            <input class="form-control" id="changeNumber" type="text" name="changeNumber">
+        </div>
+        <!-- Tipologia de cambio -->
+        <div class="col-md-4">
+            <label class="form-label" for="changeType">Tipologia de cambio</label>
+            <select class="form-select" id="changeType" name="changeType">
+                <option>Normal</option>
+                <option>Estandar</option>
+                <option>Urgente</option>
+                <option>Emergencia</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Descripcion del cambio -->
+        <div class="col-md-8">
+            <label class="form-label" for="changeDescrip">Descripción del cambio</label>
+            <input class="form-control" type="text" id="changeDescrip" name="changeDescrip">
+        </div>
+
+        <!-- Lista de chequeo -->
+        <div class="col-md-4">
+            <label class="form-label">¿Se realizó validación con lista de chequeo?</label><br />
+
+            <input class="btn-check" type="radio" name="options-outlined" id="yes" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="yes">Si</label>
+
+            <input class="btn-check" type="radio" name="options-outlined" id="no" autocomplete="off">
+            <label class="btn btn-outline-primary" for="no">No</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Propietario del cambio -->
+        <div class="col-md-4">
+            <label class="form-label" for="changeOwner">Propietario del cambio</label><br />
+            <input class="form-control" type="text" id="changeOwner" name="changeOwner" />
+        </div>
+        <!-- Fecha inicio estabilizacion -->
+        <div class="col-md-2">
+            <label class="form-label" for="startDate">Fecha inicio estabilización</label><br />
+            <input class="form-control" type="date" id="startDate" max="2023-12-31" name="startDate">
+        </div>
+        <!-- Fecha fin estabilizacion -->
+        <div class="col-md-2">
+            <label class="form-label" for="endDate">Fecha fin estabilización</label><br />
+            <input class="form-control" type="date" id="endDate" max="2023/12/31" name="endDate" />
+        </div>
+    </div>
+
+    <!--     <div class="row">
+               <!-- Desarrollador -
+        <div class="col-5">
+            <label class="form-label" for="changeDeveloper">Desarrollador</label>
+            <select class="form-select" id="changeDeveloper" name="changeDeveloper">
+                <option value="">Seleccione un Desarrollador</option>
+                @if (Model.Users != null)
+                {
+                foreach (var user in Model.Users)
+                {
+                if (user.Position == "Desarrollador")
+                {
+                <option value="@user.Name">@user.Name</option>
+                }
+                }
+                }
+                else
+                {
+                <option value="">No hay desarrolladores disponibles</option>
+                }
+            </select>
+        </div>
+    </div>
+    <br /> -->
+
+
+    <div class="col-10 d-flex justify-content-center">
+        <button class="btnNext btn btn-primary" type="button" id="btn1">Siguiente</button>
+    </div>
+</div>
+</html>

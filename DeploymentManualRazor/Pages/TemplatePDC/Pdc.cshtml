@@ -1,0 +1,1613 @@
+﻿@page
+@model DeploymentManualRazor.Pages.TemplatePDC.Pdc
+@{
+    ViewData["Title"] = "Plantilla Produccion";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Plantilla producción</title>
+    <link href="/" rel="stylesheet" />
+    <style>
+        .form-step {
+            display: none;
+        }
+
+            .form-step.active {
+                display: block;
+            }
+    </style>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
+</head>
+<body>
+    <div class="text-center">
+        <h1>Manual De Despliegue</h1>
+    </div>
+    <br />
+
+
+    <form method="post">
+        <!-- INFORMACION CAMBIO -->
+        <div class="form-step active" id="step1">
+            <h2>Información de cambio</h2>
+            <!-- Desplegable tipo de solicitud -->
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label" for="requesType">Tipo de solicitud</label>
+                    <select class="form-select" id="requesType" name="requesType">
+                        <option>Requerimiento </option>
+                        <option>Mantenimiento</option>
+                        <option>Proyecto</option>
+                    </select>
+                </div>
+                <!--  Numero de cambio-->
+                <div class="col-md-4">
+                    <label class="form-label" for="changeNumber">Numero de cambio</label>
+                    <input class="form-control" id="changeNumber" type="text" name="changeNumber">
+                </div>
+                <!-- Tipologia de cambio -->
+                <div class="col-md-4">
+                    <label class="form-label" for="changeType">Tipologia de cambio</label>
+                    <select class="form-select" id="changeType" name="changeType">
+                        <option>Normal</option>
+                        <option>Estandar</option>
+                        <option>Urgente</option>
+                        <option>Emergencia</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Descripcion del cambio -->
+                <div class="col-md-8">
+                    <label class="form-label" for="changeDescrip">Descripción del cambio</label>
+                    <input class="form-control" type="text" id="changeDescrip" name="changeDescrip">
+                </div>
+
+                <!-- Lista de chequeo -->
+                <div class="col-md-4">
+                    <label class="form-label">¿Se realizó validación con lista de chequeo?</label><br />
+
+                    <input class="btn-check" type="radio" name="options-outlined" id="yes" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="yes">Si</label>
+
+                    <input class="btn-check" type="radio" name="options-outlined" id="no" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="no">No</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Propietario del cambio -->
+                <div class="col-md-4">
+                    <label class="form-label" for="changeOwner">Propietario del cambio</label><br />
+                    <input class="form-control" type="text" id="changeOwner" name="changeOwner" />
+                </div>
+                <!-- Fecha inicio estabilizacion -->
+                <div class="col-md-2">
+                    <label class="form-label" for="startDate">Fecha inicio estabilización</label><br />
+                    <input class="form-control" type="date" id="startDate" max="2023-12-31" name="startDate">
+                </div>
+                <!-- Fecha fin estabilizacion -->
+                <div class="col-md-2">
+                    <label class="form-label" for="endDate">Fecha fin estabilización</label><br />
+                    <input class="form-control" type="date" id="endDate" max="2023/12/31" name="endDate" />
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Desarrollador -->
+                <div class="col-5">
+                    <label class="form-label" for="changeDeveloper">Desarrollador</label>
+                    <select class="form-select" id="changeDeveloper" name="changeDeveloper">
+                        <option value="">Seleccione un Desarrollador</option>
+                        @if (Model.Users != null)
+                        {
+                            foreach (var user in Model.Users)
+                            {
+                                if (user.Position == "Desarrollador")
+                                {
+                                    <option value="@user.Name">@user.Name</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <option value="">No hay desarrolladores disponibles</option>
+                        }
+                    </select>
+                </div>
+            </div><br />
+
+            <div class="col-10 d-flex justify-content-center">
+                <button class="btnNext btn btn-primary" type="button" id="btn1">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- FIRMAS DE ACEPTACION -->
+        <div class="form-step" id="step2">
+            <h2 id="signatures">Firmas de aceptación</h2><br />
+            <!-- Botones agregar y eliminar filas -->
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowSignature()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowSignature()">Eliminar fila</button>
+            <!-- Tabla de firmas de aceptacion -->
+            <div class="table-responsive">
+                <table class="table table-striped" id="acceptanceSignatures">
+                    <thead>
+                        <tr>
+                            <th>Rol</th>
+                            <th>Nombre y Apellido</th>
+                            <th>Area</th>
+                            <th>Nombre del EMAIL<br />(# Aprobación )</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="signatureRow mainRow">
+                            <td>
+                                <!-- Muestra una opcion: "Nivel 2" -->
+                                <select class="form-select signatureRolMain" id="signatureRolMain" title="Roles" name="signatureRolMain">
+                                    <option value="">Seleccione un Rol</option>
+                                    <option value="Nivel 2">Nivel 2</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select signatureNameMain" id="signatureNameMain" title="Usuario" name="signatureNameMain">
+                                    <option value="">Seleccione un Usuario</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="signatureAreaMain form-control" type="text" name="signatureAreaMain" />
+                                @*<label name="signatureAreaMain" class="signatureAreaMain" type="text"> </label>*@
+                            </td>
+                            <td>
+                                <textarea class="signatureEmailMain form-control" type="text" title="Email" name="signatureEmailMain"></textarea>
+                            </td>
+                            <td>
+                                <textarea class="signatureObserMain form-control" type="text" title="Obervaciones" name="signatureObserMain"> </textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Botones para avanzar al siguiente paso o retroceder -->
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary me-2" onclick="previousStep('step2', 'step1')">Anterior</button>
+                <button type="button" class="btn btn-primary ps-2" id="btn2">Siguiente</button>
+                @*onclick="nextStep('step2', 'step3')"*@
+            </div>
+
+        </div>
+
+
+        <!-- FORMATO DE CAPACITACION -->
+        <div class="form-step" id="step3">
+            <h2>Formato de capacitación</h2><br />
+            <!--Botones para agregar y eliminar filas  -->
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowTraining()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowTraining()">Eliminar fila</button>
+            <!--Tabla formato de capacitacion  -->
+            <table class="table table-striped" id="trainigFormat">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Instructor</th>
+                        <th>Recurso capacitado</th>
+                        <th>Comentarios</th>
+                        <th>Tipo</th>
+                        <th>Objetivo capacitación</th>
+                        <th>Temas tratados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="trainingRow">
+                        <td>
+                            <input class="form-control" type="date" id="startDateTraining" max="2023/12/31" name="startDateTraining" />
+                        </td>
+                        <td>
+                            <input class="developerNameMain form-control" type="text" name="developerNameMain" />
+                        </td>
+                        @*<td><label class="developerNameMain"></label></td>*@
+                        <td>
+                            <input class="form-control" id="dataTrainingMain" type="text" name="dataTrainingMain" />
+                        </td>
+                        @*<td><label type="text" id="dataTrainingMain"></label></td>*@
+                        <td><textarea class="form-control" type="text" id="comments" title="Comentarios" name="comments"> </textarea></td>
+                        <td><input class="form-control" type="text" id="type" name="type"></td>
+                        <td><input class="form-control" type="text" id="objetive" name="objetive"></td>
+                        <td><input class="form-control" type="text" id="issues" name="issues"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Botones para avanzar al siguiente paso o retroceder -->
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary me-2" type="button" onclick="previousStep('step3', 'step2')">Anterior</button>
+                <button class="btn btn-primary" type="button" onclick="nextStep('step3', 'step4')">Siguiente</button>
+            </div>
+        </div>
+
+
+        <!-- INFORMACION GENERAL DE CONTACTOS -->
+        <div class="form-step" id="step4">
+            <h2>Información general de contactos</h2><br />
+            <!--Botones para agregar y eliminar filas  -->
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowContact()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowContact()">Eliminar fila</button>
+            <!--Tabla informacion general de contactos-->
+            <table class="table table-striped" id="informationContact">
+                <thead>
+                    <tr>
+                        <th>Rol</th>
+                        <th>Nombre y Apellido</th>
+                        <th>Telefono</th>
+                        <th>Email</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="contactRow mainRow">
+                        <td>
+                            <select class="form-select contactRolMain" name="contactRolMain">
+                                <option value="">Seleccione un Rol</option>
+                                <option value="Lider Digital">Lider Digital</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select contactNameMain" name="contactNameMain">
+                                <option value="">Seleccione un Usuario</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input class="contactPhoneMain form-control" type="number" name="contactPhoneMain">
+                        </td>
+                        <td>
+                            <input class="contactEmailMain form-control" type="text" name="contactEmailMain" />
+                        </td>
+                        <td>
+                            <textarea class="contactObserMain form-control" type="text" title="Observaciones" name="contactObserMain"> </textarea>
+                        </td>
+                    </tr>
+                    <tr class="contactRow mainRow">
+                        <td>
+                            <select class="form-select contactRolDev" name="contactRolDev">
+                                <option value="">Seleccione un Rol</option>
+                                <option value="Desarrollador">Desarrollador</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select contactNameDev" name="contactNameDev">
+                                <option value="">Seleccione un Usuario</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input class="contactPhoneDev form-control" type="number" name="contactPhoneDev">
+                        </td>
+                        <td>
+                            <input class="contactEmailDev form-control" type="text" name="contactEmailDev">
+                        </td>
+                        <td>
+                            <textarea class="contactObserDev form-control" type="text" title="Observaciones" name="contactObserDev"> </textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Botones para avanzar al siguiente paso o retroceder -->
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary me-2" type="button" onclick="previousStep('step4', 'step3')">Anterior</button>
+                <button class="btn btn-primary" type="button" onclick="nextStep('step4', 'step5')">Siguiente</button>
+            </div>
+        </div>
+
+        <!--PREREQUISITOS-->
+        <div class="form-step" id="step5">
+            <h2 id="prere">Prerequisitos</h2><br />
+            <!--Botones para agregar y eliminar filas  -->
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowPrere()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowPrere()">Eliminar fila</button>
+            <!--Tabla informacion general de contactos-->
+            <table class="table table-striped" id="prerequisites">
+                <thead>
+                    <tr>
+                        <th>Secuencia</th>
+                        <th>Descripción</th>
+                        <th>Fecha y hora inicio</th>
+                        <th>Fecha y hora final</th>
+                        <th>Tiempo de ejecución</th>
+                        <th>Responsable (Nombre y Apellido)</th>
+                        <th>Área o proveedor</th>
+                        <th>SI</th>
+                        <th>NO</th>
+                        <th>ERROR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="prereRow">
+                        <td>
+                            <input class="prereSecuMain form-control" name="prereSecuMain" value="1">
+                        </td>
+                        <td>
+                            @foreach (var server in Model.Servers)
+                            {
+                                if (server.ServerID.Equals(Model.ServerID))
+                                {
+                                    <textarea class="prereDescripMain form-control" title="Descripción" name="prereDescripMain">Desolidificar (deshabilitar el Solidcore) los servidores @server.NameServer</textarea>
+                                }
+                            }
+
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="startDatePre" name="startDatePre">
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="endDatePre" name="endDatePre">
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" id="timeExPre" name="timeExPre" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" value="Seguridad" name="responsiblePre">
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" value="Infraestructura" name="areaPre">
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="radio" name="radioPre" id="radios1" value="option1" checked>
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="radio" name="radioPre" id="radios2" value="option2">
+                        </td>
+                        <td>
+                            <textarea class="form-control" title="Error">N/A</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Botones para avanzar al siguiente paso o retroceder -->
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary me-2" type="button" onclick="previousStep('step5', 'step4')">Anterior</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep('step5', 'step6')">Siguiente</button>
+            </div>
+        </div>
+
+        <!--PLAN DE IMPLEMENTACION-->
+        <div class="form-step" id="step6">
+            <h2>Plan de implementación</h2><br />
+            <!--Botones para agregar y eliminar filas  -->
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowPlan()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowPlan()">Eliminar fila</button>
+            <table class="table table-striped" id="plan">
+                <thead>
+                    <tr>
+                        <th>Secuencia</th>
+                        <th>Descripción</th>
+                        <th>Fecha y hora inicio</th>
+                        <th>Fecha y hora final</th>
+                        <th>Tiempo de ejecución</th>
+                        <th>Responsable (Nombre y Apellido)</th>
+                        <th>Área o proveedor</th>
+                        <th>SI</th>
+                        <th>NO</th>
+                        <th>ERROR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="planRow">
+                        <td>
+                            <input class="planSecuMain form-control" name="planSecuMain" value="1">
+                        </td>
+                        <td>
+                            <textarea class="planDescripMain form-control" name="planDescripMain" id="serverPlan" title="Descripción"> </textarea>
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="startDatePlan" name="startDatePlan">
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" max="2050-12-31T23:59" id="endDatePlan" name="endDatePlan">
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" value="" id="timeEx" name="timeEx" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" value="Admnin. Servidores" name="responsiblePlan">
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" value="Infraestructura" name="areaPlan">
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="radio" name="radioPlan" id="radios1" value="option1">
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="radio" name="radioPlan" id="radios2" value="option2">
+                        </td>
+                        <td>
+                            <textarea class="form-control" title="Error">N/A</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary me-2" onclick="previousStep('step6', 'step5')">Anterior</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep('step6', 'step7')">Siguiente</button>
+            </div>
+
+        </div>
+
+        <!--PREREQUISITOS POST IMPLANTACION-->
+        <div class="form-step" id="step7">
+            <h2 id="prerePost">Prerrequisitos post implantación</h2><br />
+
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowPrerePost()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowPrerePost()">Eliminar fila</button><br />
+            <table class="table table-striped" id="prerequisitesPost">
+                <tbody>
+                    <tr>
+                        <th>Secuencia</th>
+                        <th>Descripción</th>
+                        <th>Área o proveedor</th>
+                        <th>Responsable (Nombre y Apellido)</th>
+                        <th>Fecha y hora inicio</th>
+                        <th>Fecha y hora final</th>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr class="prerePostRow">
+                        <td>
+                            <input class="form-control prerePostSecuMain" type="number" name="prerePostSecuMain" value="1" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" name="prePostDescripMain" />
+                        </td>
+                        <td>
+                            <input class="form-control prerePostAreaMain" type="text" name="prerePostAreaMain">
+                        </td>
+                        <td>
+                            <input class="form-control prerePostNameMain" type="text" name="prerePostNameMain">
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" id="startDatePrePost" max="2050-12-31T23:59" name="startDatePrePost">
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" id="endDatePrePost" max="2050-12-31T23:59" name="endDatePrePost">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary me-2" type="button" onclick="previousStep('step7', 'step6')">Anterior</button>
+                <button class="btn btn-primary" type="button" onclick="nextStep('step7', 'step8')">Siguiente</button>
+            </div>
+        </div>
+
+        <!--Detalles usuarios funcionales-->
+        <div class="form-step" id="step8">
+
+            <h2 id="prerePost">Detalle usuarios funcionales</h2><br />
+            <button class="btn btn-primary rounded-pill" type="button" onclick="addRowUsu()">Agregar fila</button>
+            <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowUsu()">Eliminar fila</button>
+            <table class="table table-striped" id="functionalUsers">
+                <tr>
+                    <th>Secuencia</th>
+                    <th>Funcionario (Nombre y Apellido)</th>
+                    <th>Área</th>
+                    <th>Usuario de ingreso</th>
+                    <th>Teléfono Contacto (Ext.)</th>
+                    <th>Fecha y hora inicio</th>
+                    <th>Fecha y hora final</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="usuSecuMain form-control" name="usuSecuMain" value="1">
+                    </td>
+                    <td>
+                        <input class="form-control" type="text" name="usuFuncionarioMain" />
+                    </td>
+                    <td>
+                        <input class="form-control" type="text" name="usuAreaMain" />
+                    </td>
+                    <td>
+                        <input class="user form-control" type="text" name="usuIngresoMain" />
+                    </td>
+                    <td>
+                        <input class="form-control" type="text" value="N/A" name="usuPhoneMain" />
+                    </td>
+                    <td>
+                        <input class="form-control" type="datetime-local" id="startDateUsu" max="2050-12-31T23:59" name="startDateUsu">
+                    </td>
+                    <td>
+                        <input class="form-control" type="datetime-local" id="endDateUsu" max="2050-12-31T23:59" name="endDateUsu">
+                    </td>
+                </tr>
+            </table>
+
+
+            <div class="col-md-4">
+                <p class="fw-bold">Roll Back</p>
+                <input class="form-control" type="text" value="En caso de falla en el punto 2 devolver al valor inicial" name="rollBack">
+            </div>
+            <div class="col-md-4">
+                <p class="fw-bold">Blue print</p>
+                <label for="versionBlue" class="form-label">Versión</label>
+                <input clPss="form-control" type="text" value="1.1" id="versionBlue" name="versionBlue">
+
+                <label for="dateBlue" class="form-label">Fecha</label>
+                <input class="form-control" type="text" value="5/04/2021" id="dateBlue" name="dateBlue">
+
+                <label for="dateBlue" class="form-label">Observacione generales y anexos</label>
+                <input class="form-control" type="text" id="observaciones" name="observaciones" value="https://asesorescolpatria.sharepoint.com/:u:/s/Tecnologia/EVvFp-tVp5FJngwpkH1Ah04BK9rxR-mhQ-EuGheRM9j6rg?e=YeOAzn">
+
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary me-2" onclick="previousStep('step8', 'step7')">Anterior</button>
+                <a type="button" class="btn btn-success" asp-page="../Excel" asp-page-handler="DownloadTemplate">Descargar Plantilla </a>
+                <button class="btn btn-success" type="submit">Descargar Excel</button>
+            </div>
+        </div>
+
+    </form>
+    @*<input type="hidden" id="contadorFilasInput" name="RowCountToAdd" value="1">
+        <input type="hidden" id="RowCount" name="RowCountToAdd" value="1">*@
+
+    @section Scripts {
+
+        <script>
+
+
+            //Obtener botones de pasos
+            var btn1 = document.getElementById('btn1')
+            var btn2 = document.getElementById('btn2')
+
+            //Obtener campos del primer paso para validar que esten llenos
+            var requesType = document.getElementById('requesType');
+            var changeNumber = document.getElementById('changeNumber')
+            var changeType = document.getElementById('changeType')
+            var changeDescription = document.getElementById('changeDescrip')
+            var changeOwner = document.getElementById('changeOwner')
+            var startDate = document.getElementById('startDate')
+            var endDate = document.getElementById('endDate')
+            var changeDeveloper = document.getElementById('changeDeveloper')
+
+            //Formato capacitacion
+            var startDateTraining = document.getElementById('startDateTraining')
+
+            //Obtener nombre de firma de aceptacion para validar
+            var signatureName = document.getElementById('signatureNameMain')
+            var startDatePlan = document.getElementById('startDatePlan')
+            var endDatePlan = document.getElementById('endDatePlan')
+
+            var timeEx = document.getElementById('timeEx')
+
+
+            //Prerequisites
+            var startDatePre = document.getElementById('startDatePre')
+            var endDatePre = document.getElementById('endDatePre')
+            var timeExPre = document.getElementById('timeExPre')
+
+
+
+
+            //Evento para validar los campos en el primer paso
+            var a = false;
+            btn1.addEventListener('click', () => {
+                if (changeOwner.value == '' || requesType.value == '' || changeNumber.value == '' || changeType.value == '' || changeDescription.value == '' || startDate.value == '' || endDate.value == '' || changeDeveloper.value == '') {
+                    alert('Por favor, complete todos los  campos.');
+                } else {
+
+                    a = true;
+                }
+                if (a) {
+                    console.log('ok')
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step2').classList.add('active');
+                    a = false
+
+                }
+            });
+
+            //Evento para validar los campos en el segundo paso
+            btn2.addEventListener('click', () => {
+                if (signatureName.value == '') {
+                    alert('Complete todos los campos');
+                } else {
+                    a = true
+                }
+                if (a) {
+                    document.getElementById('step2').classList.remove('active');
+                    document.getElementById('step3').classList.add('active');
+                    a = false
+                }
+            });
+
+            //Completar el propietario del cambio
+            changeOwner.addEventListener('blur', () => {
+                var owner = $('#changeOwner').val();
+                console.log('Hola mundo');
+                $('.user').val(owner);
+            });
+
+            startDate.addEventListener('blur', () => {
+                var datePlan = startDate.value;
+                var newDatePlan = datePlan + 'T00:00';
+                startDatePre.value = newDatePlan
+                startDateTraining.value = startDate.value;
+            });
+
+            timeEx.addEventListener('blur', () => {
+                const minutes = parseInt(timeEx.value, 10);
+                const date1 = moment(startDatePlan.value, 'YYYY-MM-DDTHH:mm');
+                if (!isNaN(minutes) && date1.isValid()) {
+                    const date2 = moment(date1).add(minutes, 'minutes');
+                    endDatePlan.value = date2.format('YYYY-MM-DDTHH:mm');
+                }
+
+            });
+
+            timeExPre.addEventListener('blur', () => {
+                const minutes = parseInt(timeExPre.value, 10);
+                const date1 = moment(startDatePre.value, 'YYYY-MM-DDTHH:mm');
+                if (!isNaN(minutes) && date1.isValid()) {
+                    const date2 = moment(date1).add(minutes, 'minutes');
+                    endDatePre.value = date2.format('YYYY-MM-DDTHH:mm');
+                    startDatePlan.value = endDatePre.value;
+                }
+
+            });
+
+
+            function downloadTemplate() {
+                window.location.href = '../Excel/DownloadTemplate';
+            }
+
+            var myTableSignature = document.querySelector("#acceptanceSignatures");
+            var RowCountSignature = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowSignature() {
+                var row = myTableSignature.insertRow(myTableSignature.rows.length);
+                row.classList.add("signatureRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                
+                console.log('ok fila')
+                cell2.innerHTML = `
+                    <td>
+                        <select class="form-select signatureName" name="signatureName${RowCountSignature}">
+                            <option value="">Seleccione un Usuario</option>
+                        </select>
+                    </td>`;
+
+                cell3.innerHTML =`
+                    <td>
+                        <input class="signatureArea form-control" type="text" name="signatureArea${RowCountSignature}"/>
+                    </td>`
+                cell4.innerHTML = `
+                    <td>
+                        <textarea class="signatureEmail form-control" type="text" name="signatureEmail${RowCountSignature}"/>   </textarea>
+                     </td>`;
+                cell5.innerHTML = `
+                    <td>
+                        <textarea type="text" class="signatureObser form-control" name="signatureObser${RowCountSignature}"> </textarea>
+                    </td >`;
+
+                var $rolSelect = $(cell1).find('.signatureRol');
+                var $nameSelect = $(cell2).find('.signatureName');
+
+                $rolSelect.change(function () {
+                    var selectedRol = $(this).val();
+                    var $currentRow = $(this).closest('tr'); // Obtener la fila actual
+
+                    // Limpiar las opciones existentes en la fila actual
+                    $currentRow.find('.signatureName').empty();
+                    $currentRow.find('.signatureArea').val('');
+                    $currentRow.find('.signatureEmail').val('');
+                    $currentRow.find('.signatureObser').val('');
+
+                    // Agregar opción predeterminada en la fila actual
+                    $currentRow.find('.signatureName').append($('<option>', {
+                        value: '',
+                        text: 'Seleccione un Usuario'
+                    }));
+
+                    // Filtrar y agregar opciones según el rol seleccionado en la fila actual
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                            @Html.Raw("if ('" + user.Position + "' === selectedRol) {");
+                                @Html.Raw("$nameSelect.append($('<option>', { value: '" + user.Name + "', text: '" + user.Name + "' }));");
+                                @Html.Raw("console.log('pk')");
+                            @Html.Raw("}");
+                        }
+                    }
+
+                });
+
+
+                $nameSelect.change(function () {
+                    var rol = 'Lider Digital'
+                    var userId = $(this).val();
+                    var signatureRol = $('#changeNumber').val();
+                    var changeNumber = $('#changeNumber').val();
+                    var changeDescrip = $('#changeDescrip').val();
+                    var a = changeDescrip.split(" ")[0];
+                    var subcadena = a.slice(0, a.length - 1);
+                    var $currentRow = $(this).closest('tr'); // Obtener la fila actual
+                    var signatureRol = $currentRow.find('#signatureRol').val();
+
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users) {
+                        @Html.Raw("if ('" + user.Name + "' == userId ) {");
+                            @Html.Raw("$currentRow.find('.signatureArea').val('" + user.Area + "');");
+                            @*@Html.Raw("$currentRow.find('#signatureRol').val('N/A');");*@
+                            @Html.Raw("$currentRow.find('.signatureEmail').val('RE_VoBo '+ changeNumber + '-' + subcadena + ' ' + signatureRol);");
+                            @Html.Raw("$currentRow.find('.signatureObser').val('N/A');");
+                        if (user.Position == "Lider Digital")
+                        {
+                                @Html.Raw("$('.contactRolMain').empty();");
+                                @Html.Raw("$('.contactRolMain').append($('<option>', { value: '" + user.Position + "', text: '" + user.Position + "'}));");
+                                @Html.Raw("$('.contactNameMain').empty();");
+                                @Html.Raw("$('.contactNameMain').append($('<option>', { value: '" + user.Name + "', text: '" + user.Name + "'}));");
+                                @Html.Raw("$('.contactPhoneMain ').val('" + user.Phone + "');");
+                                @Html.Raw("$('.contactEmailMain ').val('" + user.Email + "');");
+                                @Html.Raw("$('.contactObserMain').val('N/A')");
+                        }
+
+                        @Html.Raw("}");
+                        @Html.Raw("else if (!userId){")
+                            @Html.Raw("$currentRow.find('.signatureArea').val('');");
+                            @Html.Raw("$currentRow.find('.signatureEmail').val('');");
+                            @Html.Raw("$currentRow.find('.signatureObser').val('');");
+                        @Html.Raw("}");
+                    }
+                    }
+
+
+                });
+
+                RowCountSignature++;
+                document.getElementById("contadorFilasInput").value = RowCountSignature;
+            }
+
+            function deleteRowSignature() {
+                var rowCount = myTableSignature.rows.length;
+                if (rowCount <= 1) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTableSignature.deleteRow(rowCount - 1);
+                    RowCountSignature--;
+                    document.getElementById("contadorFilasInput").value = RowCountSignature;
+                }
+            }
+
+            var myTableTraining = document.querySelector("#trainigFormat");
+            var RowCountTraining = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowTraining() {
+
+                var row = myTableTraining.insertRow(myTableTraining.rows.length);
+                row.classList.add("trainingRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+
+                cell1.innerHTML = `
+                    <td>
+                        <input class="form-control" type="date" id="startDate" max="2023/12/31" value="2023/06/07" />
+                    </td>`
+                ;
+
+                cell2.innerHTML = `
+                    <td >
+                        <input type="text" class=" developerName form-control" id="dataTraining">
+                        <label class="developerName"> </label>
+                    </td>`
+                ;
+
+                cell3.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" id="dataTraining">
+                    </td>`
+                ;
+                cell4.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" id="comments">
+                    </td>`
+                ;
+                cell5.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" id="type">
+                    </td>`
+                ;
+                cell6.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" id="objetive">
+                    </td>`
+                ;
+                cell7.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" id="issues">
+                    </td>`
+                ;
+
+                var developer = document.querySelector(".developerNameMain").textContent;
+                var developerNameCell = row.querySelector(".developerName");
+                developerNameCell.textContent = developer;
+
+                $('#changeDeveloper').change(function () {
+
+                    var selectedDeveloper = $('#changeDeveloper').val();
+                    console.log(selectedDeveloper)
+                    var $currentRow = $('.trainingRow').closest('tr');
+
+                    $currentRow.find('.developerName').empty();
+
+                    @if (Model.Users != null)
+                    {
+                         foreach (var user in Model.Users)
+                        {
+                                    @Html.Raw("if ('" + user.Name + "' == selectedDeveloper ) {")
+                                        @Html.Raw("$currentRow.find('.developerName').text('" + user.Name + "');");
+                                    @Html.Raw("}");
+                                    @Html.Raw("else if (!selectedDeveloper){")
+                                        @Html.Raw("('.developerName').empty();");
+                                    @Html.Raw("}");
+                        }
+                    }
+
+
+                });
+
+                RowCountTraining++;
+                document.getElementById("contadorFilasInput").value = RowCountTraining;
+            }
+
+            function deleteRowTraining() {
+                var rowCount = myTableTraining.rows.length;
+                if (rowCount <= 2) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTableTraining.deleteRow(rowCount - 1);
+                    RowCountTraining--;
+                    document.getElementById("contadorFilasInput").value = RowCountTraining;
+                }
+            }
+
+            var myTable = document.querySelector("#informationContact");
+            var RowCountContact = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowContact(){
+
+                var row = myTable.insertRow(myTable.rows.length);
+                row.classList.add("contactRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+
+                cell1.innerHTML = `
+                    <td>
+                        <select class="form-select contactRol" id="">
+                            <option value="">Seleccione un Rol</option>
+                            <option value="Desarrollador">Desarrollador</option>
+                            <option value="Lider Digital">Lider Digital</option>
+                        </select>
+                    </td>`;
+
+                cell2.innerHTML = `
+                    <td>
+                        <select class="form-select contactName" id="">
+                            <option value="">Seleccione un Usuario</option>
+                        </select>
+                    </td>`;
+
+                cell3.innerHTML =`
+                    <td>
+                        <label type="text" class="contactPhone"> </label>
+                    </td>`
+                cell4.innerHTML = `
+                    <td>
+                        <label type="text" class="contactEmail"> </label>
+                        </td>`;
+                cell5.innerHTML = `
+                    <td>
+                        <textarea class="form-control contactObser" type="text"> </textarea>
+                    </td >`;
+
+                var $rolSelect = $(cell1).find('.contactRol');
+                var $nameSelect = $(cell2).find('.contactName');
+
+                $rolSelect.change(function () {
+                    var selectedRol = $(this).val();
+                    var $currentRow = $(this).closest('tr'); // Obtener la fila actual
+
+                    // Limpiar las opciones existentes en la fila actual
+                    $currentRow.find('.contactName').empty();
+                    $currentRow.find('.contactPhone').empty();
+                    $currentRow.find('.contactEmail').empty();
+                    $currentRow.find('.contactObser').val('');
+
+                    // Agregar opción predeterminada en la fila actual
+                    $currentRow.find('.contactName').append($('<option>', {
+                        value: '',
+                        text: 'Seleccione un Usuario'
+                    }));
+
+                    // Filtrar y agregar opciones según el rol seleccionado en la fila actual
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users) {
+                        if (user.Position == "Desarrollador") {
+                            @Html.Raw("if ('Desarrollador' === selectedRol) {");
+                            @Html.Raw("$currentRow.find('.contactName').append($('<option>', { value: '" + user.UserID + "', text: '" + user.Name + "' }));");
+                            @Html.Raw("}");
+                        } else if (user.Position == "Lider Digital") {
+                            @Html.Raw("if ('Lider Digital' === selectedRol) {");
+                            @Html.Raw("$currentRow.find('.contactName').append($('<option>', { value: '" + user.UserID + "', text: '" + user.Name + "' }));");
+                            @Html.Raw("}");
+                        }
+                    }
+                    }
+
+                });
+
+                $nameSelect.change(function () {
+                    console.log("ok")
+                    var userId = $(this).val();
+                    var $currentRow = $(this).closest('tr'); // Obtener la fila actual
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users) {
+                        @Html.Raw("if (" + user.UserID + " == userId ) {")
+                        @Html.Raw("$currentRow.find('.contactPhone').text('" + user.Phone + "');");
+                        @Html.Raw("$currentRow.find('.contactEmail').text('" + user.Email + "');");
+                        @Html.Raw("$currentRow.find('.contactObser').val('N/A');");
+
+                        @Html.Raw("}");
+                        @Html.Raw("else if (!userId){")
+                        @Html.Raw("$currentRow.find('.contactPhone').empty();");
+                        @Html.Raw("$currentRow.find('.contactEmail').empty();");
+                        @Html.Raw("$currentRow.find('.contactObser').val('');");
+                        @Html.Raw("}");
+                    }
+                    }
+
+                });
+
+                RowCountContact++;
+                document.getElementById("contadorFilasInput").value = RowCountContact;
+            }
+
+            function deleteRowContact() {
+                var rowCount = myTable.rows.length;
+                if (rowCount <= 1) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTable.deleteRow(rowCount - 1);
+                    RowCountContact--;
+                    document.getElementById("contadorFilasInput").value = RowCountContact;
+                }
+            }
+
+            var myTablePrere = document.querySelector("#prerequisites");
+            var RowCountPrere = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowPrere(){
+
+                var row = myTablePrere.insertRow(myTablePrere.rows.length);
+                row.classList.add("prereRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+                var cell8 = row.insertCell(7);
+                var cell9 = row.insertCell(8);
+                var cell10 = row.insertCell(9);
+
+
+                cell1.innerHTML = `
+                    <td>
+                        <label class="prereSecu"></label>
+                    </td>`
+                ;
+
+                cell2.innerHTML = `
+                    <td>
+                        <textarea class="prereDescrip form-control"> N/A</textarea>
+                    </td>`
+                ;
+
+                cell3.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                    </td>`
+                ;
+                cell4.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                    </td>`
+                ;
+                cell5.innerHTML = `
+                    <td>
+                        <input class="form-control" type="number" name="" value="" />
+                    </td>`
+                ;
+                cell6.innerHTML = `
+                    <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>`
+                ;
+                cell7.innerHTML = `
+                    <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>`;
+                cell8.innerHTML = `
+                    <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" value="1" id="defaultCheck1"  name="radio-${RowCountPrere}">
+                        </div>
+                    </td>`
+                ;
+                cell9.innerHTML = `
+                    <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" value="2" id="defaultCheck2" name="radio-${RowCountPrere}">
+                        </div>
+                    </td>`
+                ;
+                cell10.innerHTML = `
+                    <td>
+                        <textarea class="form-control"> N/A</textarea>
+                    </td>`
+                ;
+
+                var sequence = row.querySelector(".prereSecu");
+                sequence.textContent = RowCountPrere + 2;
+
+                RowCountPrere++;
+                document.getElementById("contadorFilasInput").value = RowCountPrere;
+            }
+
+            function deleteRowPrere() {
+                var rowCount = myTablePrere.rows.length;
+                if (rowCount <= 1) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTablePrere.deleteRow(rowCount - 1);
+                    RowCountPrere--;
+                    document.getElementById("contadorFilasInput").value = RowCountPrere;
+                }
+            }
+
+            var myTablePlan= document.querySelector("#plan");
+            var RowCountPlan= 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowPlan() {
+
+                var row = myTablePlan.insertRow(myTablePlan.rows.length);
+                row.classList.add("planRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+                var cell8 = row.insertCell(7);
+                var cell9 = row.insertCell(8);
+                var cell10 = row.insertCell(9);
+
+
+                cell1.innerHTML = `
+                    <td>
+                        <input class="planSecu form-control" id="planSecu${RowCountPlan}" name="planSecu${RowCountPlan}">
+                    </td>`
+                    ;
+
+                cell2.innerHTML = `
+                    <td>
+                        <textarea class="planDescrip form-control" name="planDescrip${RowCountPlan}"> N/A</textarea>
+                    </td>`
+                    ;
+
+                cell3.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="startDatePlan${RowCountPlan}" max="2050-12-31T23:59" name="startDatePlan${RowCountPlan}">
+                    </td>`
+                    ;
+                cell4.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="endDatePlan${RowCountPlan}" max="2050-12-31T23:59" name="endDatePlan${RowCountPlan}">
+                    </td>`
+                    ;
+                cell5.innerHTML = `
+                    <td>
+                        <input class="form-control" type="number" value="" id="timeEx${RowCountPlan}" name="timeEx${RowCountPlan}"/>
+                    </td>`
+                    ;
+                cell6.innerHTML = `
+                    <td>
+                        <input class="form-control" type="text" name="responsiblePlan${RowCountPlan}" />
+                    </td>`
+                    ;
+                cell7.innerHTML = `
+                    <td>
+                        <input class="form-control" type="text" name="areaPlan${RowCountPlan}" />
+                    </td>`;
+                cell8.innerHTML = `
+                    <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" value="1" id="defaultCheck1"  name="radio-${RowCountPlan}">
+                        </div>
+                    </td>`
+                    ;
+                cell9.innerHTML = `
+                    <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" value="2" id="defaultCheck2" name="radio-${RowCountPlan}">
+                        </div>
+                    </td>`
+                    ;
+                cell10.innerHTML = `
+                    <td>
+                        <textarea class="form-control"> N/A</textarea>
+                    </td>`
+                    ;
+
+                var startDatePlan0 = document.getElementById('startDatePlan0')
+                var endDatePlan0 = document.getElementById('endDatePlan0')
+                var timeExPlan0 = document.getElementById('timeEx0')
+                var startDatePrePost = document.getElementById('startDatePrePost');
+                var endDatePrePost = document.getElementById('endDatePrePost');
+
+                var startDateUsu = document.getElementById('startDateUsu');
+                var endDateUsu = document.getElementById('endDateUsu');
+
+                startDatePlan0.value = endDatePlan.value;
+
+                timeExPlan0.addEventListener('blur', () => {
+                    const minutes = parseInt(timeExPlan0.value, 10);
+                    const date1 = moment(startDatePlan0.value, 'YYYY-MM-DDTHH:mm');
+                    if (!isNaN(minutes) && date1.isValid()) {
+                        const date2 = moment(date1).add(minutes, 'minutes');
+                        endDatePlan0.value = date2.format('YYYY-MM-DDTHH:mm');
+                        startDatePrePost.value = endDatePlan0.value;
+
+                        const date4 = moment(endDatePlan0.value).add(30, 'minutes');
+
+                        endDatePrePost.value = date4.format('YYYY-MM-DDTHH:mm');
+                        startDateUsu.value = endDatePrePost.value
+
+                        const date5 = moment(startDateUsu.value).add(10, 'minutes');
+                        endDateUsu.value = date5.format('YYYY-MM-DDTHH:mm');
+                    }
+                });
+
+
+
+                if (RowCountPlan > 0) {
+
+                    var startDatePlane = document.getElementById('startDatePlan' + RowCountPlan)
+                    var endDatePlane = document.getElementById('endDatePlan' + RowCountPlan)
+                    var timeExPlane = document.getElementById('timeEx' + RowCountPlan)
+
+                    if (RowCountPlan > 1) {
+                        var contador = RowCountPlan - 1;
+                        var endDateles = document.getElementById('endDatePlan' + contador)
+                        startDatePlane.value = endDateles.value
+                    }
+
+
+                    if (RowCountPlan < 2) {
+                        startDatePlane.value = endDatePlan0.value;
+                        console.log('hola mundo')
+                    }
+
+
+                    timeExPlane.addEventListener('blur', () => {
+                        console.log('hola mundo')
+                        const minutes = parseInt(timeExPlane.value, 10);
+                        const date1 = moment(startDatePlane.value, 'YYYY-MM-DDTHH:mm');
+                        if (!isNaN(minutes) && date1.isValid()) {
+                            const date2 = moment(date1).add(minutes, 'minutes');
+                            endDatePlane.value = date2.format('YYYY-MM-DDTHH:mm');
+                            startDatePrePost.value = endDatePlane.value
+
+                            const date4 = moment(endDatePlane.value).add(30, 'minutes');
+
+                            endDatePrePost.value = date4.format('YYYY-MM-DDTHH:mm');
+                            startDateUsu.value = endDatePrePost.value
+
+                            const date5 = moment(startDateUsu.value).add(10, 'minutes');
+                            endDateUsu.value = date5.format('YYYY-MM-DDTHH:mm');
+
+                        }
+                    });
+                }
+
+                var $timeEx= $(cell2).find('.timeEx');
+
+                $timeEx.change(function () {
+                    var signatureRol = $currentRow.find('#datePlan').val();
+                });
+
+                document.getElementById("planSecu" + RowCountPlan).value = RowCountPlan+2;
+                RowCountPlan++;
+                document.getElementById("contadorFilasInput").value = RowCountPlan;
+            }
+
+            function deleteRowPlan() {
+                var rowCount = myTablePlan.rows.length;
+                if (rowCount <= 2) {
+                    alert('No se puede eliminar el la primera fila');
+                } else {
+                    myTablePlan.deleteRow(rowCount - 1);
+                    RowCountPlan--;
+                    document.getElementById("contadorFilasInput").value = RowCountPlan;
+                }
+            }
+
+            var myTablePrerePost = document.querySelector("#prerequisitesPost");
+            var RowCountPrerePost = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowPrerePost() {
+
+                var row = myTablePrerePost.insertRow(myTablePrerePost.rows.length);
+                row.classList.add("prereRowPost", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+
+                cell1.innerHTML = `
+                    <td>
+                        <label class="prerePostSecu">1</label>
+                    </td>`
+                ;
+                cell2.innerHTML =`
+                    <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>
+                    `
+                ;
+                cell3.innerHTML = `
+                    <td>
+                        <label class="prerePostArea"> </label>
+                    </td>`
+                ;
+                cell4.innerHTML = `
+                   <td>
+                      <label class="prerePostName form-control" type="text" value="" ></label>
+                    </td>`
+                ;
+                cell5.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                     </td>`
+                ;
+                cell6.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                    </td>`
+                ;
+
+                $('#changeDeveloper').change(function () {
+
+                    var selectedDeveloper = $('#changeDeveloper option:selected').val();
+                    var $currentRow = $('.prereRowPost').closest('tr');
+
+                    $currentRow.find('.prerePostName').empty();
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                    {
+                                @Html.Raw("if ('" + user.Name + "' == selectedDeveloper ) {")
+                                    @Html.Raw("$currentRow.find('.prerePostName').text('" + user.Name + "');");
+                                @Html.Raw("}");
+                                @Html.Raw("else if (!selectedDeveloper){")
+                                    @Html.Raw("('.prerePostName').empty();");
+                                @Html.Raw("}");
+                    }
+                    }
+
+
+                });
+
+                var developer = document.querySelector(".prerePostNameMain").textContent;
+                var developerNameCell = row.querySelector(".prerePostName");
+                developerNameCell.textContent = developer;
+
+                var area = document.querySelector(".prerePostAreaMain").textContent;
+                var developerAreaCell = row.querySelector(".prerePostArea");
+                developerAreaCell.textContent = area;
+
+                var secu1 = row.querySelector(".prerePostSecu");
+                secu1.textContent = RowCountPrerePost + 2;
+
+                RowCountPrerePost++;
+                document.getElementById("RowCount").value = RowCountPrerePost;
+            }
+
+            function deleteRowPrerePost() {
+                var rowCount = myTablePrerePost.rows.length;
+                if (rowCount <= 2) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTablePrerePost.deleteRow(rowCount - 1);
+                    RowCountPrerePost--;
+                    document.getElementById("RowCount").value = RowCountPrerePost;
+                }
+            }
+
+            var myTableUsu = document.querySelector("#functionalUsers");
+            var RowCountUsu = 0; // Inicializar el contador en 1 debido a la fila de encabezado existente
+
+            function addRowUsu() {
+
+                var row = myTableUsu.insertRow(myTableUsu.rows.length);
+                row.classList.add("usuRow", "addedRow"); // Agregar clases adicionales a la fila nueva
+
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+
+                cell1.innerHTML = `
+                    <td>
+                        <label class="usuSecu">1</label>
+                    </td>`
+                ;
+                cell2.innerHTML =`
+                    <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>
+                    `
+                ;
+                cell3.innerHTML = `
+                   <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>`
+                ;
+                cell4.innerHTML = `
+                   <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>`
+                ;
+                cell5.innerHTML = `
+                    <td>
+                        <input class="form-control" type="text" value="" />
+                    </td>`
+                ;
+                cell6.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                    </td>`
+                ;
+                cell7.innerHTML = `
+                    <td>
+                        <input class="form-control" type="datetime-local" id="" max="2050-12-31T23:59" value="2023-01-01T00:00">
+                    </td>`
+                ;
+
+                var secu = row.querySelector(".usuSecu");
+                secu.textContent = RowCountUsu + 2;
+
+                RowCountUsu++;
+                document.getElementById("RowCount").value = RowCountUsu;
+            }
+
+            function deleteRowUsu() {
+                var rowCount = myTableUsu.rows.length;
+                if (rowCount <= 2) {
+                    alert('No se puede eliminar el encabezado');
+                } else {
+                    myTableUsu.deleteRow(rowCount - 1);
+                    RowCountUsu--;
+                    document.getElementById("RowCount").value = RowCountUsu;
+                }
+            }
+
+            function nextStep(currentStepId, nextStepId) {
+
+                document.getElementById(currentStepId).classList.remove('active');
+                document.getElementById(nextStepId).classList.add('active');
+
+            }
+
+            function previousStep(currentStepId, previousStepId) {
+                document.getElementById(currentStepId).classList.remove('active');
+                document.getElementById(previousStepId).classList.add('active');
+            }
+
+            $(document).ready(function () {
+
+
+
+                $('.signatureRolMain').change(function () {
+                    var selectedRol = $(this).val();
+                    var $nameSelect = $('.signatureNameMain');
+
+
+                    // Limpiar las opciones existentes
+                    $nameSelect.empty();
+                    $('.signatureRow .signatureAreaMain').empty();
+                    $('.signatureRow .signatureEmailMain').val('');
+                    $('.signatureRow .signatureObserMain').val('');
+                    $('.trainingRow #dataTrainingMain').val('');
+                    $('.trainingRow #comments').val('');
+
+                    // Agregar opción predeterminada
+                    $nameSelect.append($('<option>', {
+                        value: '',
+                        text: 'Seleccione un Usuario'
+                    }));
+
+                    // Filtrar y agregar opciones según el rol seleccionado
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                            @Html.Raw("if ('" + user.Position + "' === selectedRol) {");
+                                @Html.Raw("$nameSelect.append($('<option>', { value: '" + user.Name + "', text: '" + user.Name + "' }));");
+                            @Html.Raw("}");
+                        }
+                    }
+
+                });
+
+                $('.signatureNameMain').change(function () {
+                    var signatureRolMain = $('#signatureRolMain').val();
+                    var userId = $(this).val()
+                    var changeNumber = $('#changeNumber').val();
+                    var changeDescrip = $('#changeDescrip').val();
+                    var a = changeDescrip.split(" ")[0];
+                    var subCadena = a.slice(0, a.length - 1);
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                            @Html.Raw("if ('"+ user.Name +"' == userId ) {")
+                                @Html.Raw("$('.signatureRow .signatureAreaMain').val('" + user.Area + "');");
+                                @Html.Raw("$('.signatureRow .signatureEmailMain').val('RE_VoBo '+ changeNumber + '-' +subCadena + ' ' + signatureRolMain);");
+                                @Html.Raw("$('.signatureRow .signatureObserMain').val('N/A');");
+                                @Html.Raw("$('.trainingRow #dataTrainingMain').val('" + user.Name +"');");
+                                @Html.Raw("$('.trainingRow #comments').val('RE_VoBo '+ changeNumber+subCadena + ' ' + signatureRolMain);");
+
+                            @Html.Raw("}");
+                            @Html.Raw("else if (!userId){")
+                                @Html.Raw("$('.signatureRow .signatureAreaMain').val('');");
+                                @Html.Raw("$('.signatureRow .signatureEmailMain').val('');");
+                                @Html.Raw("$('.signatureRow .signatureObserMain').val('');");
+                                @Html.Raw("$('.trainingRow #dataTrainingMain').val('');");
+                                @Html.Raw("$('.trainingRow #comments').val('');");
+                            @Html.Raw("}");
+                        }
+                    }
+
+                });
+
+                $('.contactRolMain').change(function () {
+                    var selectedRol = $(this).val();
+                    console.log(selectedRol)
+                    var $nameSelect = $('.contactNameMain');
+
+
+                        // Limpiar las opciones existentes
+                        $nameSelect.empty();
+                    $('.contactRow .contactPhoneMain').val('');
+                    $('.contactRow .contactEmailMain').val('');
+                        $('.contactRow .contactObserMain').val('');
+
+                        // Agregar opción predeterminada
+                        $nameSelect.append($('<option>', {
+                            value: '',
+                            text: 'Nestor'
+                        }));
+
+                        // Filtrar y agregar opciones según el rol seleccionado
+                        @if (Model.Users != null)
+                        {
+                            foreach (var user in Model.Users)
+                            {
+                                if (user.Position == "Desarrollador")
+                                {
+                                    @Html.Raw("if ('Desarrollador' === selectedRol) {");
+                                        @Html.Raw("$nameSelect.append($('<option>', { value: '" + user.UserID + "', text: '" + user.Name + "' }));");
+                                    @Html.Raw("}");
+                                }
+                                else if (user.Position == "Lider Digital")
+                                {
+                                    @Html.Raw("if ('Lider Digital' === selectedRol) {");
+                                        @Html.Raw("$nameSelect.append($('<option>', { value: '" + user.UserID + "', text: '" + user.Name + "' }));");
+                                    @Html.Raw("}");
+                                }
+                            }
+                        }
+
+                });
+
+                $('.contactNameMain').change(function () {
+                    console.log("ok")
+                    let userId = $(this).val()
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                                    @Html.Raw("if ("+ user.UserID +" == userId ) {")
+                                        @Html.Raw("$('.contactRow .contactPhoneMain').val('" + user.Phone + "');");
+                                        @Html.Raw("$('.contactRow .contactEmailMain').val('" + user.Email + "');");
+                                        @Html.Raw("$('.contactRow .contactObserMain    ').val('N/A');");
+
+                                    @Html.Raw("}");
+                                    @Html.Raw("else if (!userId){")
+                                        @Html.Raw("$('.contactRow .contactPhoneMain').val('');");
+                                        @Html.Raw("$('.contactRow .contactEmailMain').val('');");
+                                        @Html.Raw("$('.contactRow .contactObserMain').val('');");
+                                    @Html.Raw("}");
+                        }
+                    }
+
+                });
+
+                $('#changeDeveloper').change(function () {
+                    var selectedDeveloper = $('#changeDeveloper option:selected').val();
+
+                    @if (Model.Users != null)
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                            @Html.Raw("if ('"+ user.Name + "' == selectedDeveloper ) {")
+                                @Html.Raw("$('.developerNameMain').val('" + user.Name + "');");
+                                @Html.Raw("$('.prerePostNameMain').val('" + user.Name + "');");
+                                @Html.Raw("$('.prerePostAreaMain').val('" + user.Area + "');");
+                                @Html.Raw("$('.contactRolDev').empty();");
+                                @Html.Raw("$('.contactRolDev').append($('<option>', { value: '" + user.Position + "', text: '" + user.Position + "'}));");
+                                @Html.Raw("$('.contactNameDev').empty();");
+                                @Html.Raw("$('.contactNameDev').append($('<option>', { value: '" + user.Name + "', text: '" + user.Name + "'}));");
+                                @Html.Raw("$('.contactPhoneDev').val('" + user.Phone + "');");
+                                @Html.Raw("$('.contactEmailDev').val('" + user.Email + "');");
+                                @Html.Raw("$('.contactObserDev').val('N/A');");
+                             @Html.Raw("}");
+                             @Html.Raw("else if (!selectedDeveloper){")
+                                    @Html.Raw("$('.developerNameMain').val('');");
+                                    @Html.Raw("$('.contactRolDev').empty();");
+                                    @Html.Raw("$('.contactNameDev').empty();");
+                                    @Html.Raw("$('.contactPhoneDev').val('');");
+                                    @Html.Raw("$('.contactEmailDev').val('');");
+                                    @Html.Raw("$('.contactObserDev').val('');");
+                            @Html.Raw("}");
+                        }
+                    }
+
+                });
+            });
+        </script>
+    }
+</body>
+</html>

@@ -1,0 +1,59 @@
+﻿@page
+@model DeploymentManualRazor.Pages.NewPages.FirmasAceptacionModel
+@{
+}
+
+<!-- FIRMAS DE ACEPTACION -->
+<div class="form-step" id="step2">
+    <h2 id="signatures">Firmas de aceptación</h2><br />
+    <!-- Botones agregar y eliminar filas -->
+    <button class="btn btn-primary rounded-pill" type="button" onclick="addRowSignature()">Agregar fila</button>
+    <button class="btn btn-primary rounded-pill" type="button" onclick="deleteRowSignature()">Eliminar fila</button>
+    <!-- Tabla de firmas de aceptacion -->
+    <div class="table-responsive">
+        <table class="table table-striped" id="acceptanceSignatures">
+            <thead>
+                <tr>
+                    <th>Rol</th>
+                    <th>Nombre y Apellido</th>
+                    <th>Area</th>
+                    <th>Nombre del EMAIL<br />(# Aprobación )</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="signatureRow mainRow">
+                    <td>
+                        <!-- Muestra una opcion: "Nivel 2" -->
+                        <select class="form-select signatureRolMain" id="signatureRolMain" title="Roles" name="signatureRolMain">
+                            <option value="">Seleccione un Rol</option>
+                            <option value="Nivel 2">Nivel 2</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select signatureNameMain" id="signatureNameMain" title="Usuario" name="signatureNameMain">
+                            <option value="">Seleccione un Usuario</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="signatureAreaMain form-control" type="text" name="signatureAreaMain" />
+                        @*<label name="signatureAreaMain" class="signatureAreaMain" type="text"> </label>*@
+                    </td>
+                    <td>
+                        <textarea class="signatureEmailMain form-control" type="text" title="Email" name="signatureEmailMain"></textarea>
+                    </td>
+                    <td>
+                        <textarea class="signatureObserMain form-control" type="text" title="Obervaciones" name="signatureObserMain"> </textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Botones para avanzar al siguiente paso o retroceder -->
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-primary me-2" onclick="previousStep('step2', 'step1')">Anterior</button>
+        <button type="button" class="btn btn-primary ps-2" id="btn2">Siguiente</button>
+        @*onclick="nextStep('step2', 'step3')"*@
+    </div>
+
+</div>

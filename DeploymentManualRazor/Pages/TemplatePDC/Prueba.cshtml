@@ -1,0 +1,88 @@
+﻿@page
+@model DeploymentManualRazor.Pages.TemplatePDC.PruebaModel
+@attribute [ValidateAntiForgeryToken]
+@{
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    @*<form id="miFormulario">
+        <input type="button" id="button1" value="demo1" />
+    </form>
+
+    <input type="text" id="name" />
+    <input type="text" id="lastName" />
+    <button onclick="submitDetailsForm()">Click</button>
+    <span id="result1"></span>*@
+
+    <form method="post">
+        <div>
+            <label for="Nombre">Nombre:</label>
+            <input type="text" asp-for="Nombre" />
+        </div>
+        <div>
+            <label for="Email">Email:</label>
+            <input type="text" asp-for="Email" />
+        </div>
+        <button type="submit">Enviar</button>
+    </form>
+
+    @*@section Scripts {
+
+        <script>
+
+            function submitDetailsForm() {
+
+                var requestData = {
+                    name: $('#name').val(),
+                    last: $('#lastName').val()
+                }
+                console.log(requestData);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Page("prueba","demo")',
+                    data: requestData,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (result) {
+                        $('#result1').html(result);
+                    }
+                });
+
+            }
+            $(document).ready(function () {
+
+
+                //$("#button1").click(function () {
+                //    $.ajax({
+                //        type: 'POST',
+                //        url: "/?handler=Demo",
+                //        data: requestData,
+                //        contentType: "application/json",
+                //        dataType: "json",
+                //        success: function (result) {
+                //            $('#result1').html(result);
+                //        }
+                //    });
+                //});
+                $("#button1").click(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Page("prueba","demo")',
+                        success: function (result) {
+                            $('#result1').html(result);
+                        }
+                    });
+                });
+            });
+        </script>
+    }*@
+</body>
+
+</html>
